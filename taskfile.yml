@@ -9,49 +9,49 @@ tasks:
     description: Run tests with PostgreSQL (RLS requires PostgreSQL) - full cleanup
     cmds:
       - echo "Starting database..."
-      - docker-compose down -v
-      - docker-compose up -d db
+      - docker compose down -v
+      - docker compose up -d db
       - echo "Running tests..."
-      - docker-compose run --rm test uv run pytest --ds=testproject.settings --cov=django_rls --cov-report=xml
+      - docker compose run --rm test uv run pytest --ds=testproject.settings --cov=django_rls --cov-report=xml
       - echo "Stopping containers..."
-      - docker-compose down
+      - docker compose down
 
   test:keep-running:
     description: Run tests and keep containers running for manual testing
     cmds:
       - echo "Starting containers..."
-      - docker-compose up -d db pgadmin
+      - docker compose up -d db pgadmin
       - echo "Running tests..."
-      - docker-compose run --rm test uv run pytest --ds=testproject.settings --cov=django_rls --cov-report=xml
+      - docker compose run --rm test uv run pytest --ds=testproject.settings --cov=django_rls --cov-report=xml
       - echo ""
       - echo "Containers running"
       - echo "  - Database on port 5432"
       - echo "  - Web server on port 8000"
       - echo "  - pgAdmin on port 5050"
       - echo ""
-      - echo "Use 'docker-compose up -d web' to start the Django server"
-      - echo "Use 'docker-compose run --rm test sh' to get a test shell"
+      - echo "Use 'docker compose up -d web' to start the Django server"
+      - echo "Use 'docker compose run --rm test sh' to get a test shell"
       - echo "Use 'task test:down' to stop containers"
 
   test:dev:
     description: Start containers for manual testing (no tests run)
     cmds:
       - echo "Starting containers..."
-      - docker-compose up -d db web pgadmin
+      - docker compose up -d db web pgadmin
       - echo ""
       - echo "Containers running"
       - echo "  - Database on port 5432"
       - echo "  - Web server on port 8000"
       - echo "  - pgAdmin on port 5050"
       - echo ""
-      - echo "Use 'docker-compose run --rm test sh' to get a test shell"
-      - echo "Use 'docker-compose exec web python manage.py <command>' for Django commands"
+      - echo "Use 'docker compose run --rm test sh' to get a test shell"
+      - echo "Use 'docker compose exec web python manage.py <command>' for Django commands"
       - echo "Use 'task test:down' to stop containers"
 
   test:down:
     description: Stop all test containers
     cmds:
-      - docker-compose down
+      - docker compose down
       - echo "Containers stopped."
 
 
