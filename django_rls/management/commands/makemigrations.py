@@ -10,8 +10,8 @@ import questionary
 
 # Import exception for non-interactive environments
 try:
-    from prompt_toolkit.output.win32 import NoConsoleScreenBufferError
-except (ImportError, AssertionError):
+    from prompt_toolkit.output.win32 import NoConsoleScreenBufferError  # type: ignore[attr-defined]
+except (ImportError, AssertionError, AttributeError):
     # On non-Windows or if prompt_toolkit changes, use OSError as fallback
     NoConsoleScreenBufferError = OSError
 

@@ -30,10 +30,15 @@ def get_field_sql_type(model: models.Model, field_name: str) -> str:
     try:
         field = model._meta.get_field(field_name)
     except FieldDoesNotExist:
+        model_name = model._meta.object_name
         raise FieldDoesNotExist(
-            f"Field '{field_name}' does not exist on model '{model.__name__}'"
+            f"Field '{field_name}' does not exist on model '{model_name}'"
         )
-    return FIELD_TYPE_MAPPING.get(field.get_internal_type(), "text")
+    # GenericForeignKey doesn't have get_internal_type()
+    if hasattr(field, "get_internal_type"):
+        internal_type = field.get_internal_type()
+        return FIELD_TYPE_MAPPING.get(internal_type, "text")
+    return "text"  # Fallback for fields without get_internal_type()
 
 def build_rls_using_clause(fields: List[str], field_types: Dict[str, str], session_prefix: str) -> str:
     """
