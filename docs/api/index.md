@@ -136,9 +136,9 @@ def default_request_user_resolver(request: Any) -> Dict[str, RLSValue]
 Default RLS resolver for standard Django requests in REQUEST_RESOLVER.
 
 Dynamically builds a dict based on the fields in RLS_FIELDS.
-Extracts the value from request.user or request.user.{field}.
+Extracts the value directly from request.user.{field} - fields must map exactly.
 
-If user is not authenticated, returns an empty dict.
+If user is not authenticated or a field doesn't exist, returns RlsWildcard.NONE for that field.
 
 <a id="django_rls.resolvers.default_rls_bypass_check"></a>
 
@@ -162,6 +162,7 @@ def strawberry_context_user_resolver(info: Any) -> Dict[str, RLSValue]
 Strawberry GraphQL version of the default resolver.
 
 Reads info.context.user and resolves all RLS_FIELDS dynamically.
+Fields must map exactly to user attributes - no fallback logic.
 
 <a id="django_rls.resolvers.strawberry_rls_bypass_check"></a>
 
@@ -333,6 +334,11 @@ Maps Django field types to PostgreSQL SQL types for RLS policy generation.
 **Returns**:
 
   PostgreSQL SQL type string (e.g., 'int', 'uuid', 'text')
+  
+
+**Raises**:
+
+- `FieldDoesNotExist` - If the field does not exist on the model
 
 <a id="django_rls.utils.build_rls_using_clause"></a>
 
@@ -347,6 +353,7 @@ Constructs the RLS USING clause with wildcard and null handling for each field.
 
 Each field is wrapped in a CASE statement that handles:
 - NULL session variables (returns FALSE)
+- Empty strings (returns FALSE)
 - RlsWildcard.NONE (returns FALSE)
 - RlsWildcard.ALL (returns TRUE - bypasses RLS)
 - Normal values (compares field to session variable)

@@ -15,7 +15,7 @@ if user_settings := getattr(django_settings, "DJANGO_RLS", False):
         )
 else:
     warnings.warn(
-        "You have not provided any custom Strawberry RLS settings. Falling back to defaults.",
+        "You have not provided any custom Django RLS settings. Falling back to defaults.",
         RuntimeWarning,
     )
     django_rls_settings = DjangoRLSSettings()

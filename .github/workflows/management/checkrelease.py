@@ -1,6 +1,6 @@
 import os
 
-from .releasefile import parse_release_file
+from .releasefile import InvalidReleaseFileError, parse_release_file
 from .utils import PATHS
 
 
@@ -9,8 +9,15 @@ def main() -> None:
         if not PATHS.RELEASE_FILE.exists():
             f.write("status=Release file doesn't exist")
         else:
-            parse_release_file(PATHS.RELEASE_FILE.read_text("utf-8"))
-            f.write(f"status={''}")
+            try:
+                contents = PATHS.RELEASE_FILE.read_text("utf-8")
+                if not contents.strip():
+                    f.write("status=Release file is empty")
+                else:
+                    parse_release_file(contents)
+                    f.write(f"status={''}")
+            except InvalidReleaseFileError:
+                f.write("status=Release file is invalid or missing release type")
 
 
 if __name__ == "__main__":
