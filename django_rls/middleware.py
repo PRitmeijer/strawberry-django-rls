@@ -3,10 +3,10 @@ import logging
 from django.utils.deprecation import MiddlewareMixin
 from django.db import connection
 from django.conf import settings as django_settings
-from typing import Any
+from typing import Any, Dict
 
 from django_rls.settings_type import DjangoRLSSettings
-from django_rls.constants import RlsWildcard, DBSafeValue
+from django_rls.constants import RlsWildcard, DBSafeValue, RLSValue
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,7 @@ class RLSMiddleware(MiddlewareMixin):
             return
 
         # 1. Bypass check
+        rls_context: Dict[str, RLSValue]
         if rls_settings.BYPASS_CHECK_RESOLVER(request):
             rls_context = {
                 field: RlsWildcard.ALL for field in rls_settings.RLS_FIELDS
